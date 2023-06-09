@@ -17,17 +17,28 @@ const movieHandlers = require("./movieHandlers");
 const usersHandlers = require("./usersHandlers");
 const { validateMovie } = require("./validators.js");
 const { validateUser } = require("./validators.js");
-const { hashPassword } = require("./auth.js");
+const { hashPassword, verifyPassword, verifyToken } = require("./auth");
 
+// the public routes
 app.get("/api/movies", movieHandlers.getMovies);
 app.get("/api/movies/:id", movieHandlers.getMovieById);
 app.get("/api/users", usersHandlers.getUsers);
 app.get("/api/users/:id", usersHandlers.getUsersById);
+app.post("/api/users", validateUser, hashPassword, usersHandlers.postUser);
+app.post(
+  "/api/login",
+  usersHandlers.getUserByEmailWithPasswordAndPassToNext,
+  verifyPassword
+);
+
+app.use(verifyToken); // authentication wall
+
+//the routes to protect
+
 app.post("/api/movies", validateMovie, movieHandlers.postMovie);
 app.put("/api/movies/:id", validateMovie, movieHandlers.updateMovie);
 app.delete("/api/movies/:id", movieHandlers.deleteMovie);
 app.delete("/api/users/:id", usersHandlers.deleteUser);
-app.post("/api/users", validateUser, hashPassword, usersHandlers.postUser);
 app.put("/api/users/:id", validateUser, hashPassword, usersHandlers.updateUser);
 
 app.listen(port, (err) => {
