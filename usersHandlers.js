@@ -2,7 +2,7 @@ const { hashPassword } = require("./auth");
 const database = require("./database");
 
 const getUsers = (req, res) => {
-  let sql = "select * from users";
+  let sql = "SELECT CONCAT(firstname,' ', lastname ) AS fullname from users";
   const sqlValues = [];
 
   if (req.query.language != null) {
